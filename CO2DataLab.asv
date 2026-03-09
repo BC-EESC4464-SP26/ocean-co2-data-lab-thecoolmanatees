@@ -4,9 +4,9 @@
 % to the overall instructions and questions from the lab assignment sheet.
 clear
 %% 1. Read in the monthly gridded CO2 data from the .csv file
-% The data file is included in your repository as “LDEO_GriddedCO2_month_flux_2006c.csv”
+% The data file is included in your repository as Â“LDEO_GriddedCO2_month_flux_2006c.csvÂ”
 % Your task is to write code to read this in to MATLAB
-% Hint: you can again use the function “readtable”, and use your first data lab code as an example.
+% Hint: you can again use the function Â“readtableÂ”, and use your first data lab code as an example.
 filename = 'LDEO_GriddedCO2_month_flux_2006c.csv'; %change this to select a different station
 CO2data = readtable(filename);
 head(CO2data)
@@ -81,15 +81,9 @@ title('January Surface-Water pCO2(uatm)') % subscript and unit
 
 %% 4. Calculate and plot a global map of annual mean pCO2
 
-annualmeanpCO2 = mean(PCO2_SW,3)
-
-figure(3); clf
-worldmap world
-contourfm(latgrid, longrid, annualmeanpCO2,'linecolor','none');
-colorbar
-geoshow('landareas.shp','FaceColor','black')
-title('Annual Mean pCO2 (uatm)') % subscript and unit
-
+for i = 1:12 
+    annualmeanpCO2 = mean(PCO2_SW(:,:,i))
+end
 
 
 %% 5. Calculate and plot a global map of the difference between the annual mean seawater and atmosphere pCO2
