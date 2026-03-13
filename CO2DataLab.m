@@ -82,10 +82,13 @@ title('January Surface-Water pCO2(uatm)') % subscript and unit
 %% 4. Calculate and plot a global map of annual mean pCO2
 
 annualmeanpCO2 = mean(PCO2_SW,3)
+size(longrid)
+size(latgrid)
+size(annualmeanpCO2)
 
 figure(3); clf
 worldmap world
-contourfm(latgrid, longrid, annualmeanpCO2,'linecolor','none');
+contourfm(latgrid, longrid, annualmeanpCO2','linecolor','none');
 colorbar
 geoshow('landareas.shp','FaceColor','black')
 title('Annual Mean pCO2 (uatm)') % subscript and unit
@@ -93,7 +96,11 @@ title('Annual Mean pCO2 (uatm)') % subscript and unit
 
 
 %% 5. Calculate and plot a global map of the difference between the annual mean seawater and atmosphere pCO2
-%<--
+filename1 = 'monthly_in_situ_co2_mlo.csv'; %change this to select a different station
+atmpCO2 = readtable(filename1);
+pCO2_atm_2000 = atmpCO2.CO2(find(atmpCO2.Yr == 2000))
+pCO2_atm_2000avg = mean(pCO2_atm_2000)
+PCO2_difference = PCO2_SW - pCO2_atm_2000avg
 
 %% 6. Calculate relative roles of temperature and of biology/physics in controlling seasonal cycle
 %<--
