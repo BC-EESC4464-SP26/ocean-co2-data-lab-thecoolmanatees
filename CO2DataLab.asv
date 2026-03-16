@@ -15,8 +15,8 @@ head(CO2data)
 %Find each unique longitude, latitude, and month value that will define
 %your 3-dimensional grid
 longrid = unique(CO2data.LON); %finds all unique longitude values
-latgrid = unique(CO2data.LAT)  %finds all unique latitude values
- monthgrid = unique(CO2data.MONTH)  %finds all unique month values
+latgrid = unique(CO2data.LAT);  %finds all unique latitude values
+ monthgrid = unique(CO2data.MONTH);  %finds all unique month values
 
 %Create empty 3-dimensional arrays of NaN values to hold your reshaped data
     %You can make these for any variables you want to extract - for this
@@ -98,17 +98,61 @@ title('Annual Mean pCO2 (uatm)') % subscript and unit
 %% 5. Calculate and plot a global map of the difference between the annual mean seawater and atmosphere pCO2
 filename1 = 'monthly_in_situ_co2_mlo.csv'; %change this to select a different station
 atmpCO2 = readtable(filename1);
-pCO2_atm_2000 = atmpCO2.CO2(find(atmpCO2.Yr == 2000))
-pCO2_atm_2000avg = mean(pCO2_atm_2000)
+pCO2_atm_2000 = atmpCO2.CO2(find(atmpCO2.Yr == 2000));
+pCO2_atm_2000avg = mean(pCO2_atm_2000, "omitnan");
+PCO2_difference = annualmeanpCO2 - pCO2_atm_2000avg;
 
+figure(4); clf
+worldmap world
+contourfm(latgrid, longrid, PCO2_difference','linecolor','none');
+colorbar %If needed, talk with Celia about fixing up colorbars
+geoshow('landareas.shp','FaceColor','black')
+title('pCO2 Difference (uatm)') % subscript and unit
 
 %% 6. Calculate relative roles of temperature and of biology/physics in controlling seasonal cycle
-%<--
+% equation 1 is for temperature effect and equation 2 is for biophysical
+% effect
+% arrays need to be 72x40x12 using the repmat function
+%These values are going to be used in the new arrays we created with repmat
+annualSST = mean(SST, 3, "omitnan");
+annualPCO2 = mean(PCO2_SW, 3, "omitnan");
+
+%This is to create the arrays for the final equation
+SST_3D = repmat(annualSST, [1,1,12]);
+PCO2_3D = repmat(annualPCO2, [1,1,12]);
+
+%These variables are the temperature effect and biophysical effect
+%Taken from Takahashi et al
+pCO2_t = PCO2_3D .* exp(0.0423*(SST-SST_3D));
+pCO2_BP = PCO2_SW .* exp(0.0423*(SST_3D-SST));
 
 %% 7. Pull out and plot the seasonal cycle data from stations of interest
 %Do for BATS, Station P, and Ross Sea (note that Ross Sea is along a
 %section of 14 degrees longitude - I picked the middle point)
+BATS = CO2data.LAT
+StationP = CO2data
+RossSea = 
 
+%One for sea surface temperature for all three stations
+plot(1:12,BATS_SST, "g", "b--o" )
+subplot(1:12, StationP_SST, "g", "b--o")
+subplot(1:12, RossSea_SST, "g", "b--o")
+
+%One for pCO2 for all three stations
+plot(1:12,BATS_pCO2, "b")
+subplot(1:12, StationP_pCO2, "b")
+subplot(1:12, RossSea_pCO2, "b")
+
+%One for temperature effect
+plot(1:12, BATS_T)
+subplot(1:12, StationP_T)
+subplot(1:12, RossSea_T)
+
+
+%One for biophysical effect
+plot(1:12, BATS_BP)
+subplot(1:12, StationP_BP)
+subplot(1:12, RossSea_BP)
 %<--
 
 %% 8. Reproduce your own versions of the maps in figures 7-9 in Takahashi et al. 2002
@@ -116,4 +160,5 @@ pCO2_atm_2000avg = mean(pCO2_atm_2000)
 % Mark on thesese maps the locations of the three stations for which you plotted the
 % seasonal cycle above
 
+%Maybe use cmocean for colorbar
 %<--
