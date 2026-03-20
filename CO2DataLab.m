@@ -123,42 +123,114 @@ PCO2_3D = repmat(annualPCO2, [1,1,12]);
 
 %These variables are the temperature effect and biophysical effect
 %Taken from Takahashi et al
+% pCO2 at T obs
 pCO2_t = PCO2_3D .* exp(0.0423*(SST-SST_3D));
+
+% pCO2 at T mean
 pCO2_BP = PCO2_SW .* exp(0.0423*(SST_3D-SST));
 
 %% 7. Pull out and plot the seasonal cycle data from stations of interest
 %Do for BATS, Station P, and Ross Sea (note that Ross Sea is along a
 %section of 14 degrees longitude - I picked the middle point)
-BATS = CO2data.LAT,CO2data.LON
-StationP = CO2data
-RossSea = 
 
-%One for sea surface temperature for all three stations
-plot(1:12,BATS_SST, "g", "b--o" )
-subplot(1:12, StationP_SST, "g", "b--o")
-subplot(1:12, RossSea_SST, "g", "b--o")
+% Bats lat 32.833 lon 64.166
+indexBATS = find(CO2data.LAT == 32 & CO2data.LON == 297.5000);
+BATS_SST = CO2data.SST(indexBATS);
+BATS_Mean_SST = mean(BATS_SST);
 
-%One for pCO2 for all three stations
-plot(1:12,BATS_pCO2, "b")
-subplot(1:12, StationP_pCO2, "b")
-subplot(1:12, RossSea_pCO2, "b")
+BATS_PCO2 = CO2data.PCO2_SW(indexBATS);
+BATS_Mean_PCO2 = mean(BATS_PCO2);
 
-%One for temperature effect
-plot(1:12, BATS_T)
-subplot(1:12, StationP_T)
-subplot(1:12, RossSea_T)
+pCO2_T_BATS = BATS_Mean_PCO2 .* exp(0.0423*(BATS_SST-BATS_Mean_SST));
+
+pCO2_BP_BATS = BATS_PCO2 .* exp(0.0423*(BATS_Mean_SST-BATS_SST));
+
+x = 1:12;
+figure(5); clf
+subplot(2,1,1)
+plot(BATS_SST, ".")
+subplot(2,1,2)
+plot(x, BATS_PCO2, "b--", x, pCO2_BP_BATS, "g--", x, pCO2_T_BATS, "r--")
 
 
-%One for biophysical effect
-plot(1:12, BATS_BP)
-subplot(1:12, StationP_BP)
-subplot(1:12, RossSea_BP)
-%<--
+
+% Station P lat 50 lon 145
+indexP = find(CO2data.LAT == 52 & CO2data.LON == 217.5000);
+P_SST = CO2data.SST(indexP);
+P_Mean_SST = mean(P_SST);
+
+P_PCO2 = CO2data.PCO2_SW(indexP);
+P_Mean_PCO2 = mean(P_PCO2);
+
+pCO2_T_P = P_Mean_PCO2 .* exp(0.0423*(P_SST-P_Mean_SST));
+
+pCO2_BP_P = P_PCO2 .* exp(0.0423*(P_Mean_SST-P_SST));
+
+
+figure(6); clf
+subplot(2,1,1)
+plot(P_SST, ".")
+subplot(2,1,2)
+plot(x, P_PCO2, "b--", x, pCO2_BP_P, "g--", x, pCO2_T_P, "r--")
+
+
+% Ross Sea lat -76.5 long 176
+indexR = find(CO2data.LAT == -76 & CO2data.LON == 177.5000);
+R_SST = CO2data.SST(indexR);
+R_Mean_SST = mean(R_SST);
+
+R_PCO2 = CO2data.PCO2_SW(indexR);
+R_Mean_PCO2 = mean(R_PCO2);
+
+pCO2_T_R = R_Mean_PCO2 .* exp(0.0423*(R_SST-R_Mean_SST));
+
+pCO2_BP_R = R_PCO2 .* exp(0.0423*(R_Mean_SST-R_SST));
+
+
+figure(7); clf
+subplot(2,1,1)
+plot(R_SST, ".")
+subplot(2,1,2)
+plot(x, R_PCO2, "b--", x, pCO2_BP_R, "g--", x, pCO2_T_R, "r--")
+ylim([200,500])
 
 %% 8. Reproduce your own versions of the maps in figures 7-9 in Takahashi et al. 2002
 % But please use better colormaps!!!
 % Mark on thesese maps the locations of the three stations for which you plotted the
 % seasonal cycle above
 
+
+% calculating effect of biology on the surface-water pCO2 
+
+ampPCO2_BP = max(pCO2_BP, [], 3)-min(pCO2_BP,[], 3);
+% calculating effect of T on the surface-water pCO2 
+ampPCO2_T = max(pCO2_t, [], 3) - min(pCO2_t, [], 3);
+% difference T - B
+diffPCO2_T_B = ampPCO2_T - ampPCO2_BP
+
+figure(8); clf
+worldmap world
+contourfm(latgrid, longrid, ampPCO2_BP','linecolor','none');
+colorbar %If needed, talk with Celia about fixing up colorbars
+geoshow('landareas.shp','FaceColor','black')
+title('Seasonal Biological Drawdown of SW pCO2') % subscript and unit
+
+
+figure(9); clf
+worldmap world
+contourfm(latgrid, longrid, ampPCO2_T','linecolor','none');
+colorbar %If needed, talk with Celia about fixing up colorbars
+geoshow('landareas.shp','FaceColor','black')
+title('Seasonal Temperature Effect on SW pCO2') 
+
+
+figure(10); clf
+worldmap world
+contourfm(latgrid, longrid, diffPCO2_T_B','linecolor','none');
+colorbar %If needed, talk with Celia about fixing up colorbars
+geoshow('landareas.shp','FaceColor','black')
+title('Difference (T - B) ') 
 %Maybe use cmocean for colorbar
-%<--
+
+
+
