@@ -148,11 +148,16 @@ pCO2_BP_BATS = BATS_PCO2 .* exp(0.0423*(BATS_Mean_SST-BATS_SST));
 x = 1:12;
 figure(5); clf
 subplot(2,1,1)
-plot(BATS_SST, ".")
+plot(BATS_SST, "--")
+title("Bermuda Atlantic Time Series Sea Surface Temperature ")
+xlabel("Month")
+ylabel("SST (C)")
 subplot(2,1,2)
 plot(x, BATS_PCO2, "b--", x, pCO2_BP_BATS, "g--", x, pCO2_T_BATS, "r--")
-
-
+title("Bermuda Atlantic Time Series pCO2")
+xlabel("Month")
+ylabel("pCO2 (uatm)")
+legend({'Observed pCO2','Biophysical Effect', 'Temperature Effect'},'Location','northwest')
 
 % Station P lat 50 lon 145
 indexP = find(CO2data.LAT == 52 & CO2data.LON == 217.5000);
@@ -169,10 +174,16 @@ pCO2_BP_P = P_PCO2 .* exp(0.0423*(P_Mean_SST-P_SST));
 
 figure(6); clf
 subplot(2,1,1)
-plot(P_SST, ".")
+plot(P_SST, "--")
+title("Ocean Station Papa Sea Surface Temperature ")
+xlabel("Month")
+ylabel("SST (C)")
 subplot(2,1,2)
 plot(x, P_PCO2, "b--", x, pCO2_BP_P, "g--", x, pCO2_T_P, "r--")
-
+title("Ocean Station Papa pCO2")
+xlabel("Month")
+ylabel("pCO2 (uatm)")
+legend({'Observed pCO2','Biophysical Effect', 'Temperature Effect'},'Location','northeast')
 
 % Ross Sea lat -76.5 long 176
 indexR = find(CO2data.LAT == -76 & CO2data.LON == 177.5000);
@@ -189,10 +200,18 @@ pCO2_BP_R = R_PCO2 .* exp(0.0423*(R_Mean_SST-R_SST));
 
 figure(7); clf
 subplot(2,1,1)
-plot(R_SST, ".")
+plot(R_SST, "--")
+title("Ross Sea Surface Temperature ")
+xlabel("Month")
+ylabel("SST (C)")
 subplot(2,1,2)
 plot(x, R_PCO2, "b--", x, pCO2_BP_R, "g--", x, pCO2_T_R, "r--")
 ylim([200,500])
+title("Ross Sea pCO2")
+xlabel("Month")
+ylabel("pCO2 (uatm)")
+legend({'Observed pCO2','Biophysical Effect', 'Temperature Effect'},'Location','northwest')
+
 
 %% 8. Reproduce your own versions of the maps in figures 7-9 in Takahashi et al. 2002
 % But please use better colormaps!!!

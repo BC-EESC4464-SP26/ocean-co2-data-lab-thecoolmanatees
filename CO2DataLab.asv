@@ -149,9 +149,10 @@ x = 1:12;
 figure(5); clf
 subplot(2,1,1)
 plot(BATS_SST, ".")
+title("BATS Sea Surfae ")
 subplot(2,1,2)
 plot(x, BATS_PCO2, "b--", x, pCO2_BP_BATS, "g--", x, pCO2_T_BATS, "r--")
-
+title("")
 
 
 % Station P lat 50 lon 145
@@ -224,12 +225,12 @@ geoshow('landareas.shp','FaceColor','black')
 title('Seasonal Temperature Effect on SW pCO2') 
 
 
-figure(); clf
+figure(10); clf
 worldmap world
-contourfm(latgrid, longrid, ampPCO2_T','linecolor','none');
+contourfm(latgrid, longrid, diffPCO2_T_B','linecolor','none');
 colorbar %If needed, talk with Celia about fixing up colorbars
 geoshow('landareas.shp','FaceColor','black')
-title('Seasonal Temperature Effect on SW pCO2') 
+title('Difference (T - B) ') 
 %Maybe use cmocean for colorbar
 
 
