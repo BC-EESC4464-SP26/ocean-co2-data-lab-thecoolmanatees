@@ -81,7 +81,7 @@ title('January Surface-Water pCO2(uatm)') % subscript and unit
 
 %% 4. Calculate and plot a global map of annual mean pCO2
 
-annualmeanpCO2 = mean(PCO2_SW,3)
+annualmeanpCO2 = mean(PCO2_SW,3);
 size(longrid)
 size(latgrid)
 size(annualmeanpCO2)
@@ -89,6 +89,7 @@ size(annualmeanpCO2)
 figure(3); clf
 worldmap world
 contourfm(latgrid, longrid, annualmeanpCO2','linecolor','none');
+colormap summer
 colorbar
 geoshow('landareas.shp','FaceColor','black')
 title('Annual Mean pCO2 (uatm)') % subscript and unit
@@ -105,9 +106,10 @@ PCO2_difference = annualmeanpCO2 - pCO2_atm_2000avg;
 figure(4); clf
 worldmap world
 contourfm(latgrid, longrid, PCO2_difference','linecolor','none');
+colormap nebula
 colorbar %If needed, talk with Celia about fixing up colorbars
 geoshow('landareas.shp','FaceColor','black')
-title('pCO2 Difference (uatm)') % subscript and unit
+title('Carbon Sinks and Sources') % subscript and unit
 
 %% 6. Calculate relative roles of temperature and of biology/physics in controlling seasonal cycle
 % equation 1 is for temperature effect and equation 2 is for biophysical
@@ -152,11 +154,13 @@ plot(BATS_SST, "--")
 title("Bermuda Atlantic Time Series Sea Surface Temperature ")
 xlabel("Month")
 ylabel("SST (C)")
+ylim([18 30])
 subplot(2,1,2)
-plot(x, BATS_PCO2, "b--", x, pCO2_BP_BATS, "g--", x, pCO2_T_BATS, "r--")
+plot(x, BATS_PCO2, "b--", x, pCO2_BP_BATS, "k--", x, pCO2_T_BATS, "r--")
 title("Bermuda Atlantic Time Series pCO2")
 xlabel("Month")
 ylabel("pCO2 (uatm)")
+ylim([290 440])
 legend({'Observed pCO2','Biophysical Effect', 'Temperature Effect'},'Location','northwest')
 
 % Station P lat 50 lon 145
@@ -179,10 +183,11 @@ title("Ocean Station Papa Sea Surface Temperature ")
 xlabel("Month")
 ylabel("SST (C)")
 subplot(2,1,2)
-plot(x, P_PCO2, "b--", x, pCO2_BP_P, "g--", x, pCO2_T_P, "r--")
+plot(x, P_PCO2, "b--", x, pCO2_BP_P, "m--", x, pCO2_T_P, "r--")
 title("Ocean Station Papa pCO2")
 xlabel("Month")
 ylabel("pCO2 (uatm)")
+ylim([270 450])
 legend({'Observed pCO2','Biophysical Effect', 'Temperature Effect'},'Location','northeast')
 
 % Ross Sea lat -76.5 long 176
@@ -204,8 +209,9 @@ plot(R_SST, "--")
 title("Ross Sea Surface Temperature ")
 xlabel("Month")
 ylabel("SST (C)")
+ylim([-2 0])
 subplot(2,1,2)
-plot(x, R_PCO2, "b--", x, pCO2_BP_R, "g--", x, pCO2_T_R, "r--")
+plot(x, R_PCO2, "b--", x, pCO2_BP_R, "m--", x, pCO2_T_R, "r--")
 ylim([200,500])
 title("Ross Sea pCO2")
 xlabel("Month")
@@ -227,29 +233,69 @@ ampPCO2_T = max(pCO2_t, [], 3) - min(pCO2_t, [], 3);
 % difference T - B
 diffPCO2_T_B = ampPCO2_T - ampPCO2_BP
 
+
 figure(8); clf
 worldmap world
 contourfm(latgrid, longrid, ampPCO2_BP','linecolor','none');
+colormap sky
 colorbar %If needed, talk with Celia about fixing up colorbars
 geoshow('landareas.shp','FaceColor','black')
-title('Seasonal Biological Drawdown of SW pCO2') % subscript and unit
-
+title('Seasonal Biophysical Effect of Seawater pCO2') % subscript and unit
+scatterm(32,297.5,36,'r',"filled");
+scatterm(52,217.5,36,'r',"filled");
+scatterm(-76,177.5,36,'r',"filled");
 
 figure(9); clf
 worldmap world
 contourfm(latgrid, longrid, ampPCO2_T','linecolor','none');
+colormap cool
 colorbar %If needed, talk with Celia about fixing up colorbars
 geoshow('landareas.shp','FaceColor','black')
-title('Seasonal Temperature Effect on SW pCO2') 
-
+title('Seasonal Temperature Effect on Seawater pCO2') 
+scatterm(32,297.5,36,'r',"filled");
+scatterm(52,217.5,36,'r',"filled");
+scatterm(-76,177.5,36,'r',"filled");
 
 figure(10); clf
 worldmap world
 contourfm(latgrid, longrid, diffPCO2_T_B','linecolor','none');
+colormap sky
 colorbar %If needed, talk with Celia about fixing up colorbars
 geoshow('landareas.shp','FaceColor','black')
-title('Difference (T - B) ') 
+title('Difference between Temperature and Biophysical Effects (T-B)') 
+scatterm(32,297.5,36,'r',"filled");
+scatterm(52,217.5,36,'r',"filled");
+scatterm(-76,177.5,36,'r',"filled");
 %Maybe use cmocean for colorbar
 
+
+%% Extension
+
+indexMADS = find(CO2data.LAT == -20 & CO2data.LON == 337.5);
+MADS_SST = CO2data.SST(indexMADS);
+MADS_Mean_SST = mean(MADS_SST);
+
+MADS_PCO2 = CO2data.PCO2_SW(indexMADS);
+MADS_Mean_PCO2 = mean(MADS_PCO2);
+
+pCO2_T_MADS = MADS_Mean_PCO2 .* exp(0.0423*(MADS_SST-MADS_Mean_SST));
+
+pCO2_BP_MADS = MADS_PCO2 .* exp(0.0423*(MADS_Mean_SST-MADS_SST));
+
+x = 1:12;
+figure(11); clf
+subplot(2,1,1)
+plot(MADS_SST, "--")
+title("Madagascar Sea Surface Temperature ")
+xlabel("Month")
+ylabel("SST (C)")
+ylim([0 29])
+subplot(2,1,2)
+plot(x, MADS_PCO2, "b--", x, pCO2_BP_MADS, "m--", x, pCO2_T_MADS, "r--")
+title("Madagascar pCO2")
+xlabel("Month")
+ylabel("pCO2 (uatm)")
+legend({'Observed pCO2','Biophysical Effect', 'Temperature Effect'},'Location','southwest')
+ylim([320 430])
 
 
